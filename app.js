@@ -1,8 +1,8 @@
 'use strict';
 
-
 const STORE = {
   questions: [
+    null,
     {
       question: 'What kind of monkey is this?',
       answers: [
@@ -20,10 +20,10 @@ const STORE = {
         'Emperor Tamarin',
         'Bearded Macaque',
         'Marmoset',
-        'Squirrel Monkey',
+        'Bald Ukari',
       ],
-      correctAnswer: 'Emperor Tamarin',
-      image: './pics/squirrelMonkey.jpg'
+      correctAnswer: 'Bald Ukari',
+      image: './pics/baldUkari.jpg'
     },
     {
       question: 'What kind of monkey is this?',
@@ -31,9 +31,9 @@ const STORE = {
         'Pygmy Marmoset',
         'Big-nose Baboon',
         'Grivet',
-        'Probiscis Monkey',
+        'Proboscis Monkey',
       ],
-      correctAnswer: 'Proboscis monkey',
+      correctAnswer: 'Proboscis Monkey',
       image: './pics/proboscisMonkey.jpg'
     },
     {
@@ -79,10 +79,10 @@ function progressAndScoreHtml() {
   return ` 
   <ul class="question-and-score">
     <li id="question-number">
-      Question Number: ${STORE.questionNumber}/${STORE.questions.length}
+      Question Number: ${STORE.questionNumber}/${STORE.questions.length-1} 
     </li>
     <li id="score">
-      Score: ${STORE.score}/${STORE.questions.length}
+      Score: ${STORE.score}/${STORE.questions.length-1}
     </li>
   </ul>
 `;
@@ -91,7 +91,6 @@ function progressAndScoreHtml() {
 function questionHtml() {
   let currentQuestion = STORE.questions[STORE.questionNumber];
   const img = STORE.questions[STORE.questionNumber].image;
-  console.log('where is it', STORE.questions[STORE.questionNumber])
   return `
     <section class="section">
         <p>${currentQuestion.question}</p>
@@ -105,10 +104,9 @@ function answerchoicesHtml() {
   const answersArray = STORE.questions[STORE.questionNumber].answers;
   const buttons = `<div id="back-next">
                       <button type="button" id="back-btn" tabindex="6">Back</button>
-                      <button type="button" id="next-btn" tabindex="6">Next Question</button>                    
-                    </div>`
+                      <button type="button" id="validate-btn" tabindex="6">Validate!</button>                    
+                   </div>`
   let i = 0;
-  console.log(answersArray)
   answersArray.forEach(answer => {
     answersHtml += `
     <div id="option-container-${i}">
@@ -122,27 +120,35 @@ function answerchoicesHtml() {
   return answersHtml + buttons;
 }
 
-function feedbackHtml(answerStat) {
+function validationHtml(guess) {
+  console.log('validating...')
   let correctAnswer = STORE.questions[STORE.questionNumber].correctAnswer;
+  console.log(`correct answer is ${correctAnswer}`)
   let html = '';
-  if (answerStat === correctAnswer) {
+  if (guess === correctAnswer) {
+    STORE.score++;
     html = `
-      <div class="right-answer">Correct!</div>
-      <button type="button" id="next-question-btn" tabindex="6">Next Question</button>
+      <div class="right-answer">
+        Correct! You've scored ${STORE.score} out of 5.
+      </div>
+      <button type="button" id="next-btn" tabindex="6">Continue</button>
     `
   } else {
     html = `
-       <div class="wrong-answer">Wrong!</div>
-       <button type="button" id="next-question-btn" tabindex="6">Next Question</button>
+      <div class="wrong-answer">
+        Wrong! You've scored ${STORE.score} out of 5.
+      </div>
+       <button type="button" id="next-btn" tabindex="6">Continue</button>
      `
   }
+  return html;
 }
 
 function finalHtml() {
   return `
     <div class = 'final-page' >
       <p>You're all done!</p>
-      <p>You scored ${STORE.score} of 5.</p>
+      <p>You scored ${STORE.score} out of 5.</p>
       <button type="button" id="back-btn" tabindex="6">Back</button>
       <button type="submit" id="restart">Restart Quiz</button>
     </div>
@@ -154,14 +160,15 @@ function finalHtml() {
 /********** RENDER FUNCTION(S) **********/
 // This function conditionally replaces the contents of the <main> tag based on the state of the store
 
-
 function render() {
   let html = '';
-  console.log('rendering', STORE.quizStarted, STORE.questionNumber);
+
+  console.log('rendering...', `now on question ${STORE.questionNumber}`);
   if (STORE.quizStarted === false) {
     $('main').html(generateStartHtml());
     return;
-  } else if (STORE.questionNumber < STORE.questions.length) {
+  } 
+  else if (STORE.questionNumber < STORE.questions.length) {
     html = questionHtml();
     html += answerchoicesHtml();
     html += progressAndScoreHtml();
@@ -175,15 +182,10 @@ function questionNumber(question) {
   //question number value increments to show progress
 }
 
-function score() {
-  //score value increments when questons are answered correctly
-}
-
 /********** EVENT HANDLER FUNCTIONS **********/
 
-//start the quiz!!
 function clickStart() {
-  $("main").on("click", "#start", function(event) {
+  $("main").on("click", "#start", event => {
     console.log("started");
     STORE.quizStarted = true;
     STORE.questionNumber ++;
@@ -191,9 +193,17 @@ function clickStart() {
   });
 }
 
-function clickNext() {
+function clickValidate() {
+  $('main').on("click", "#validate-btn", event => {
+    let guess = $('input[name="options"]:checked').val();
+    console.log('Submitted');
+    console.log(`user chose ${guess}`);
+    $('main').html(validationHtml(guess));
+  });
+}
+
+function clickContinue() {
   $('main').on('click', '#next-btn', event => {
-    STORE.questionNumber < STORE.questions.length
     STORE.questionNumber++;
     render();
   });
@@ -201,12 +211,10 @@ function clickNext() {
 
 function clickBack() {
   $('main').on('click', '#back-btn', event => {
-    console.log('back-btn clicked')
     if (STORE.questionNumber===1) {
       $('main').html(generateStartHtml())
     }
     else {
-      STORE.questionNumber < STORE.questions.length
       STORE.questionNumber--;
       render(); 
     }
@@ -214,15 +222,9 @@ function clickBack() {
   });
 }
 
-function chooseAnswer() {
-  $('main').on("sumbit", '#option', event => {
-    event.preventDefault();
-    console.log('Submitted');
-  });
-}
+
 
  function restart() {
-  console.log('restart click')
   $('main').on("click", '#restart', event => {
     STORE.quizStarted = false;
     STORE.questionNumber = 0;
@@ -235,8 +237,8 @@ function handleQuizApp() {
   render();
   clickStart();
   clickBack();
-  clickNext();
+  clickContinue();
   restart();
-  chooseAnswer();
+  clickValidate();
 }
 $(handleQuizApp);
