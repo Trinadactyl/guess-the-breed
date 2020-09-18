@@ -4,59 +4,54 @@ const STORE = {
   questions: [
     null,
     {
-      question: 'What kind of monkey is this?',
+      question: 'Choose the Mandrill',
       answers: [
-        'Baboon',
-        'Mandrill',
-        'Clown Monkey',
-        'Red-shanked Douc'
+        {src:'./pics/chacmaBaboon.jpg', name:'Chacma Baboon'},
+        {src:'./pics/mandrill.jpg', name:'Mandrill'},
+        {src:'./pics/kingColobus.jpg', name:'King Colobus'},
+        {src:'./pics/capuchin.jpg', name:'Capuchin'},
       ],
       correctAnswer: 'Mandrill',
-      image: './pics/mandrill.jpg'
     },
     {
-      question: 'What kind of monkey is this?',
+      question: 'Choose the Bald Ukari',
       answers: [
-        'Emperor Tamarin',
-        'Bearded Macaque',
-        'Marmoset',
-        'Bald Ukari',
+        {src:'./pics/rhesusMacaque.jpg', name:'Rhesus Macaque'},
+        {src:'./pics/spiderMonkey.jpg', name:'Spider Monkey'},
+        {src:'./pics/capuchin.jpg', name:'Capuchin'},
+        {src:'./pics/baldUkari.jpg', name:'Bald Ukari'},
       ],
       correctAnswer: 'Bald Ukari',
-      image: './pics/baldUkari.jpg'
     },
     {
-      question: 'What kind of monkey is this?',
+      question: 'Pick the Japanese Macaque',
       answers: [
-        'Pygmy Marmoset',
-        'Big-nose Baboon',
-        'Grivet',
-        'Proboscis Monkey',
-      ],
-      correctAnswer: 'Proboscis Monkey',
-      image: './pics/proboscisMonkey.jpg'
-    },
-    {
-      question: 'What kind of monkey is this?',
-      answers: [
-        'Cotton-top Tamarin',
-        'Celebes crested Macaque',
-        'Hamadryas Baboon',
-        'Mantled Guereza'
-      ],
-      correctAnswer: 'Hamadryas Baboon',
-      image: './pics/hamadryasbaboon.jpg'
-    },
-    {
-      question: 'What kind of monkey is this?',
-      answers: [
-        'Silvery Lutung',
-        'Gorilla',
-        'Japanese Macaque',
-        'Sooty Mangabey'
+        {src:'./pics/rhesusMacaque.jpg', name:'Rhesus Macaque'},
+        {src:'./pics/kingColobus.jpg', name:'Kink Colobus'},
+        {src:'./pics/japaneseMacaque.jpg', name:'Japanese Macaque'},
+        {src:'./pics/capuchin.jpg', name:'Capuchin'},
       ],
       correctAnswer: 'Japanese Macaque',
-      image: './pics/japaneseMacaque.jpg'
+    },
+    {
+      question: 'Which one is the Vervet?',
+      answers: [
+        {src:'./pics/baldUkari.jpg', name:'Bald Ukari'},
+        {src:'./pics/vervet.jpg', name:'Vervet'},
+        {src:'./pics/blueMonkey.jpg', name:'Blue Monkey'},
+        {src:'./pics/capuchin.jpg', name:'Capuchin'},
+      ],
+      correctAnswer: 'Vervet',
+    },
+    {
+      question: 'Choose the King Colobus!',
+      answers: [
+        {src:'./pics/emperorTamarin.jpg', name:'Emperor Tamarin'},
+        {src:'./pics/mandrill.jpg', name:'Mandrill'},
+        {src:'./pics/kingColobus.jpg', name:'King Colobus'},
+        {src:'./pics/goldenLionTamarin.jpg', name:'Golden Lion Tamarin'},
+      ],
+      correctAnswer: 'King Colobus',
     }
   ],
   quizStarted: false,
@@ -94,30 +89,31 @@ function questionHtml() {
   return `
     <section class="section">
         <p>${currentQuestion.question}</p>
-        <img src='${img}'>
     </section>
   `;
 }
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!WORK ON THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function answerchoicesHtml() {
-  let answersHtml = '';
+  let choiceBtns = '';
   const answersArray = STORE.questions[STORE.questionNumber].answers;
   const buttons = `<div id="back-next">
-                      <button type="button" id="back-btn" tabindex="6">Back</button>
-                      <button type="button" id="validate-btn" tabindex="6">Validate!</button>                    
+                      <button type="button" id="back-btn" tabindex="6">Back</button>                    
                    </div>`
   let i = 0;
   answersArray.forEach(answer => {
-    answersHtml += `
-    <div id="option-container-${i}">
-    <input type="radio" name="options" id="option${i + 1}" value= "${answer}"
+    choiceBtns += `
+    <input type="image" name="options" id="${answer.name}" src="${answer.src}"
     tabindex ="${i + 1}" required>
-    <label for="option${i + 1}"> ${answer}</label>
-    </div>
     `;
     i++;
   });
-  return answersHtml + buttons;
+  return `
+    <section id="choice-btn-container"> 
+      ${choiceBtns}
+    </section>` + buttons;
 }
 
 function validationHtml(guess) {
@@ -155,8 +151,6 @@ function finalHtml() {
   `;
 }
 
-
-
 /********** RENDER FUNCTION(S) **********/
 // This function conditionally replaces the contents of the <main> tag based on the state of the store
 
@@ -193,13 +187,16 @@ function clickStart() {
   });
 }
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//need to call validation when image is clicked instead of validate button
 function clickValidate() {
-  $('main').on("click", "#validate-btn", event => {
-    let guess = $('input[name="options"]:checked').val();
-    console.log('Submitted');
-    console.log(`user chose ${guess}`);
-    $('main').html(validationHtml(guess));
-  });
+    $('main').on("click", "input[name=options]", event => {
+      let guess = $(event.target).attr('id')
+      console.log(`user chose ${guess}`);
+      $('main').html(validationHtml(guess));
+    });
 }
 
 function clickContinue() {
@@ -221,8 +218,6 @@ function clickBack() {
     
   });
 }
-
-
 
  function restart() {
   $('main').on("click", '#restart', event => {
