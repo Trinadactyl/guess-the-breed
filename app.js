@@ -93,9 +93,6 @@ function questionHtml() {
   `;
 }
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//!!!!!!!!!!!!!!!!!!!!!!WORK ON THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function answerchoicesHtml() {
   let choiceBtns = '';
   const answersArray = STORE.questions[STORE.questionNumber].answers;
@@ -164,16 +161,13 @@ function render() {
   } 
   else if (STORE.questionNumber < STORE.questions.length) {
     html = questionHtml();
-    html += answerchoicesHtml();
     html += progressAndScoreHtml();
+    html += answerchoicesHtml();
+    
     $('main').html(html);
   } else {
     $('main').html(finalHtml());
   };
-}
-
-function questionNumber(question) {
-  //question number value increments to show progress
 }
 
 /********** EVENT HANDLER FUNCTIONS **********/
@@ -187,10 +181,7 @@ function clickStart() {
   });
 }
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//need to call validation when image is clicked instead of validate button
+//validates when an image is selected!
 function clickValidate() {
     $('main').on("click", "input[name=options]", event => {
       let guess = $(event.target).attr('id')
@@ -209,10 +200,17 @@ function clickContinue() {
 function clickBack() {
   $('main').on('click', '#back-btn', event => {
     if (STORE.questionNumber===1) {
-      $('main').html(generateStartHtml())
+      $('main').html(generateStartHtml());
+      if (STORE.score >= 1) {
+        STORE.score--;
+        render();
+      }
     }
     else {
       STORE.questionNumber--;
+      if (STORE.score >= 1) {
+        STORE.score--;
+      }
       render(); 
     }
     

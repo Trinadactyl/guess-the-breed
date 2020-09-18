@@ -1,20 +1,23 @@
-/* Your styles should be mobile-first and responsive */
-
-/** 
-  * If you are unclear on how to utilize a mobile-first, responsive technique to write your CSS, here is an example: 
-  *
-  * https://github.com/andreacardybailey/responsive_example/blob/master/styles/responsive-base.css 
-  *
-*/
 
 * {
   font-family: "Amatic SC";
   text-align: center;
   font-size: 24px;
-  background-color: #fff8fb;
+  background-color: #6EEB83;
 }
+
+.start-page {
+  max-width: 50%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto; 
+}
+
 #start {
-  background-color: #bd96a5;
+  background-color: yellow;
+  height: 50px;
+  width: auto;
+  border-radius: 40%;
 }
 
 ul {
@@ -25,18 +28,28 @@ ul {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: 850px;
-  height: 900px;
+  width: 50%;
+  height: 80%;
   margin-left: auto;
-  margin-right: auto;
+  margin-right: auto; 
 }
 
 input[type=image] {
-  padding: 5px;
-  width: 45%;
-  max-height: 45%;
+  border: solid 4px rgb(15, 147, 224);
+  border-radius: 10px;
+  margin: 5px;
+  width: 300px;
+  height: 200px;
+  margin-left: auto;
+  margin-right: auto; 
 }
 
-#back-next {
+#back-btn {
   margin: 20px;
+  background-color: yellow;
+  height: 50px;
+  width: auto;
+  border-radius: 40%;
+  margin-left: auto;
+  margin-right: auto; 
 }
