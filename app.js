@@ -1,5 +1,17 @@
 'use strict';
 
+//-------------Changes to make:------------------
+//Click on title header to nagvigate to start page
+//use legally obtained images with consistent dimensions 
+//consistent button styles
+//change font styles
+//choose fun & user friendly color scheme
+//Display silly messages at end of quiz based on user score
+//add backgroung images and animations, and maybe sounds?
+//add option for users to comment & send feedback
+//add footer w/ my name & links to social media
+//test code
+
 const STORE = {
   questions: [
     null,
@@ -64,7 +76,7 @@ const STORE = {
 
 function generateStartHtml() {
   return `
-    <div class='start-page'>
+    <div id='start-page'>
       <p>Can you identify the monkey?</p>  
       <button type="button" id="start">Start Quiz</button>
     </div>`;
@@ -96,9 +108,7 @@ function questionHtml() {
 function answerchoicesHtml() {
   let choiceBtns = '';
   const answersArray = STORE.questions[STORE.questionNumber].answers;
-  const buttons = `<div id="back-next">
-                      <button type="button" id="back-btn" tabindex="6">Back</button>                    
-                   </div>`
+  const buttons = `<button type="button" id="back-btn" tabindex="6">Back</button>`
   let i = 0;
   answersArray.forEach(answer => {
     choiceBtns += `
@@ -181,6 +191,16 @@ function clickStart() {
   });
 }
 
+//Click header to navigate to main page & reset data
+function clickHeader() {
+  $(":header").on('click', event => {
+    STORE.quizStarted = false;
+    STORE.questionNumber = 0;
+    STORE.score = 0;
+    render();
+  } )
+}
+
 //validates when an image is selected!
 function clickValidate() {
     $('main').on("click", "input[name=options]", event => {
@@ -200,6 +220,7 @@ function clickContinue() {
 function clickBack() {
   $('main').on('click', '#back-btn', event => {
     if (STORE.questionNumber===1) {
+      STORE.questionNumber--;
       $('main').html(generateStartHtml());
       if (STORE.score >= 1) {
         STORE.score--;
@@ -229,6 +250,7 @@ function clickBack() {
 function handleQuizApp() {
   render();
   clickStart();
+  clickHeader();
   clickBack();
   clickContinue();
   restart();

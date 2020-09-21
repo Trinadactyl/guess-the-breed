@@ -6,6 +6,10 @@
   background-color: #6EEB83;
 }
 
+header:hover {
+  cursor: pointer;
+}
+
 .start-page {
   max-width: 50%;
   text-align: center;
