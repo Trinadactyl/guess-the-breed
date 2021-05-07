@@ -1,7 +1,16 @@
 'use strict';
 
+// ******************
+// DOG BREED quiz
+//   -use dog api to pull rando mimages of different breeds
+//   -user types in breed 
+//   -user gets a point for correct guess
+//   -create a database to witch user can save scores to 
+//   -option to see a leaderboard of skills! 
+ 
+
+
 //-------------Changes to make:------------------
-//Click on title header to nagvigate to start page
 //use legally obtained images with consistent dimensions 
 //consistent button styles
 //change font styles
@@ -66,10 +75,29 @@ const STORE = {
       correctAnswer: 'King Colobus',
     }
   ],
-  quizStarted: false,
+  fetchADog: fetch('https://dog.ceo/api/breeds/image/random') 
+    .then(response => response.json()),
+  quizStarted: false, 
   questionNumber: 0,
   score: 0
 };
+
+//*************DOG API FUNCTIONS****************/
+function getDogImage(){
+  fetch('https://dog.ceo/api/breeds/image/random') 
+  .then(response => response.json())
+  .then(responseJson => 
+    displayResults(responseJson))
+  .catch(error => alert('Oops. Something went wrong')
+  );
+}
+
+function displayResults(responseJson){
+  console.log(responseJson);
+  const dog = STORE.fetchADog
+  return `<img src="${dog.message}" class="results-img">`
+}
+
 
 /********** TEMPLATE GENERATION FUNCTIONS **********/
 // These functions return HTML templates 
@@ -77,7 +105,7 @@ const STORE = {
 function generateStartHtml() {
   return `
     <div id='start-page'>
-      <p>Can you identify the monkey?</p>  
+      <p>Do you know your dog breeds?</p>  
       <button type="button" id="start">Start Quiz</button>
     </div>`;
 }
@@ -172,7 +200,8 @@ function render() {
   else if (STORE.questionNumber < STORE.questions.length) {
     html = questionHtml();
     html += progressAndScoreHtml();
-    html += answerchoicesHtml();
+    html += getDogImage();
+    //html += answerchoicesHtml();
     
     $('main').html(html);
   } else {
