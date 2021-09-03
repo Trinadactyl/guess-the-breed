@@ -22,64 +22,10 @@
 //test code
 
 const STORE = {
-  questions: [
-    null,
-    {
-      question: 'Choose the Mandrill',
-      answers: [
-        {src:'./pics/chacmaBaboon.jpg', name:'Chacma Baboon'},
-        {src:'./pics/mandrill.jpg', name:'Mandrill'},
-        {src:'./pics/kingColobus.jpg', name:'King Colobus'},
-        {src:'./pics/capuchin.jpg', name:'Capuchin'},
-      ],
-      correctAnswer: 'Mandrill',
-    },
-    {
-      question: 'Choose the Bald Ukari',
-      answers: [
-        {src:'./pics/rhesusMacaque.jpg', name:'Rhesus Macaque'},
-        {src:'./pics/spiderMonkey.jpg', name:'Spider Monkey'},
-        {src:'./pics/capuchin.jpg', name:'Capuchin'},
-        {src:'./pics/baldUkari.jpg', name:'Bald Ukari'},
-      ],
-      correctAnswer: 'Bald Ukari',
-    },
-    {
-      question: 'Pick the Japanese Macaque',
-      answers: [
-        {src:'./pics/rhesusMacaque.jpg', name:'Rhesus Macaque'},
-        {src:'./pics/kingColobus.jpg', name:'Kink Colobus'},
-        {src:'./pics/japaneseMacaque.jpg', name:'Japanese Macaque'},
-        {src:'./pics/capuchin.jpg', name:'Capuchin'},
-      ],
-      correctAnswer: 'Japanese Macaque',
-    },
-    {
-      question: 'Which one is the Vervet?',
-      answers: [
-        {src:'./pics/baldUkari.jpg', name:'Bald Ukari'},
-        {src:'./pics/vervet.jpg', name:'Vervet'},
-        {src:'./pics/blueMonkey.jpg', name:'Blue Monkey'},
-        {src:'./pics/capuchin.jpg', name:'Capuchin'},
-      ],
-      correctAnswer: 'Vervet',
-    },
-    {
-      question: 'Choose the King Colobus!',
-      answers: [
-        {src:'./pics/emperorTamarin.jpg', name:'Emperor Tamarin'},
-        {src:'./pics/mandrill.jpg', name:'Mandrill'},
-        {src:'./pics/kingColobus.jpg', name:'King Colobus'},
-        {src:'./pics/goldenLionTamarin.jpg', name:'Golden Lion Tamarin'},
-      ],
-      correctAnswer: 'King Colobus',
-    }
-  ],
-  fetchADog: fetch('https://dog.ceo/api/breeds/image/random') 
-    .then(response => response.json()),
   quizStarted: false, 
   questionNumber: 0,
-  score: 0
+  score: 0,
+  dogURL: "",
 };
 
 //*************DOG API FUNCTIONS****************/
@@ -87,20 +33,24 @@ function getDogImage(){
   fetch('https://dog.ceo/api/breeds/image/random') 
   .then(response => response.json())
   .then(responseJson => 
-    displayResults(responseJson))
+    // displayDogImage(responseJson.message)
+    STORE.dogURL = responseJson.message
+  )
   .catch(error => alert('Oops. Something went wrong')
   );
-}
-
-function displayResults(responseJson){
-  console.log(responseJson);
-  const dog = STORE.fetchADog
-  return `<img src="${dog.message}" class="results-img">`
 }
 
 
 /********** TEMPLATE GENERATION FUNCTIONS **********/
 // These functions return HTML templates 
+
+function displayDogImage() {
+  getDogImage()
+  let dog = STORE.dogURL;
+  console.log(dog)
+
+  return `<img src="${dog}" alt="a doggie">`
+}
 
 function generateStartHtml() {
   return `
@@ -114,10 +64,10 @@ function progressAndScoreHtml() {
   return ` 
   <ul class="question-and-score">
     <li id="question-number">
-      Question Number: ${STORE.questionNumber}/${STORE.questions.length-1} 
+      Question Number: ${STORE.questionNumber} 
     </li>
     <li id="score">
-      Score: ${STORE.score}/${STORE.questions.length-1}
+      Score: ${STORE.score}
     </li>
   </ul>
 `;
@@ -197,11 +147,9 @@ function render() {
     $('main').html(generateStartHtml());
     return;
   } 
-  else if (STORE.questionNumber < STORE.questions.length) {
-    html = questionHtml();
-    html += progressAndScoreHtml();
-    html += getDogImage();
-    //html += answerchoicesHtml();
+  else if (STORE.questionNumber) {
+    html = progressAndScoreHtml();
+    html += displayDogImage();
     
     $('main').html(html);
   } else {
@@ -213,7 +161,7 @@ function render() {
 
 function clickStart() {
   $("main").on("click", "#start", event => {
-    console.log("started");
+    console.log("start clicked");
     STORE.quizStarted = true;
     STORE.questionNumber ++;
     render();
@@ -284,5 +232,7 @@ function handleQuizApp() {
   clickContinue();
   restart();
   clickValidate();
+  getDogImage();
+  displayDogImage()
 }
 $(handleQuizApp);
