@@ -2,8 +2,6 @@
 
 // ******************
 // DOG BREED quiz
-//   -use dog api to pull rando mimages of different breeds
-//   -user types in breed 
 //   -user gets a point for correct guess
 //   -create a database to witch user can save scores to 
 //   -option to see a leaderboard of skills! 
@@ -26,9 +24,10 @@ const STORE = {
   questionNumber: 0,
   score: 0,
   dogURL: "",
+  breed: [],
 };
 
-//*************DOG API FUNCTIONS****************/
+//*************DOG API FUNCTION****************/
 function getDogImage(){
   fetch('https://dog.ceo/api/breeds/image/random') 
   .then(response => response.json())
@@ -40,17 +39,19 @@ function getDogImage(){
   );
 }
 
+function getBreedFromUrl() {
+  //divde URL by splashes
+  let urlBits = STORE.dogURL.split('/');
+
+  //take the breed name again and divide
+  let breedName =  urlBits[4].split('-')
+  
+  STORE.breed = breedName;
+}
+
 
 /********** TEMPLATE GENERATION FUNCTIONS **********/
 // These functions return HTML templates 
-
-function displayDogImage() {
-  getDogImage()
-  let dog = STORE.dogURL;
-  console.log(dog)
-
-  return `<img src="${dog}" alt="a doggie">`
-}
 
 function generateStartHtml() {
   return `
@@ -73,57 +74,33 @@ function progressAndScoreHtml() {
 `;
 }
 
-function questionHtml() {
-  let currentQuestion = STORE.questions[STORE.questionNumber];
-  const img = STORE.questions[STORE.questionNumber].image;
-  return `
-    <section class="section">
-        <p>${currentQuestion.question}</p>
-    </section>
-  `;
+function displayDogImage() {
+
+  getDogImage()
+  let dog = STORE.dogURL;
+  console.log(dog)
+
+  return `<img src="${dog}" alt="a doggie">`
 }
 
-function answerchoicesHtml() {
-  let choiceBtns = '';
-  const answersArray = STORE.questions[STORE.questionNumber].answers;
-  const buttons = `<button type="button" id="back-btn" tabindex="6">Back</button>`
-  let i = 0;
-  answersArray.forEach(answer => {
-    choiceBtns += `
-    <input type="image" name="options" id="${answer.name}" src="${answer.src}"
-    tabindex ="${i + 1}" required>
-    `;
-    i++;
-  });
+function userInputHtml() {
   return `
-    <section id="choice-btn-container"> 
-      ${choiceBtns}
-    </section>` + buttons;
+    <form id="user-form">
+      <input type="text" id="input">
+      <input type="submit" id="guess-btn" value="answer">
+    </form>
+  `
 }
 
-function validationHtml(guess) {
-  console.log('validating...')
-  let correctAnswer = STORE.questions[STORE.questionNumber].correctAnswer;
-  console.log(`correct answer is ${correctAnswer}`)
-  let html = '';
-  if (guess === correctAnswer) {
-    STORE.score++;
-    html = `
-      <div class="right-answer">
-        Correct! You've scored ${STORE.score} out of 5.
-      </div>
-      <button type="button" id="next-btn" tabindex="6">Continue</button>
-    `
-  } else {
-    html = `
-      <div class="wrong-answer">
-        Wrong! You've scored ${STORE.score} out of 5.
-      </div>
-       <button type="button" id="next-btn" tabindex="6">Continue</button>
-     `
-  }
-  return html;
+function resultHtml() {
+  let result = validateInput()
+  console.log(result)
+
+  return `
+  <div id="result">${result}</div>
+  `
 }
+
 
 function finalHtml() {
   return `
@@ -142,7 +119,8 @@ function finalHtml() {
 function render() {
   let html = '';
 
-  console.log('rendering...', `now on question ${STORE.questionNumber}`);
+  //console.log('rendering...', `now on question ${STORE.questionNumber}`);
+  //console.log(STORE)
   if (STORE.quizStarted === false) {
     $('main').html(generateStartHtml());
     return;
@@ -150,7 +128,10 @@ function render() {
   else if (STORE.questionNumber) {
     html = progressAndScoreHtml();
     html += displayDogImage();
+    html += userInputHtml()
     
+    getBreedFromUrl();
+
     $('main').html(html);
   } else {
     $('main').html(finalHtml());
@@ -158,6 +139,7 @@ function render() {
 }
 
 /********** EVENT HANDLER FUNCTIONS **********/
+/*********************************************/
 
 function clickStart() {
   $("main").on("click", "#start", event => {
@@ -178,61 +160,41 @@ function clickHeader() {
   } )
 }
 
-//validates when an image is selected!
-function clickValidate() {
-    $('main').on("click", "input[name=options]", event => {
-      let guess = $(event.target).attr('id')
-      console.log(`user chose ${guess}`);
-      $('main').html(validationHtml(guess));
+//handle submit click
+function submitAnswer() {
+    $('main').on("submit", "#user-form", event => {
+      validateInput()
+
+      //just need this to display!
+      resultHtml();
+      STORE.questionNumber++;
+      render();
     });
 }
 
-function clickContinue() {
-  $('main').on('click', '#next-btn', event => {
-    STORE.questionNumber++;
-    render();
-  });
-}
+function validateInput() {
+  const answer = STORE.breed;
+  const input = $('#input').val()
 
-function clickBack() {
-  $('main').on('click', '#back-btn', event => {
-    if (STORE.questionNumber===1) {
-      STORE.questionNumber--;
-      $('main').html(generateStartHtml());
-      if (STORE.score >= 1) {
-        STORE.score--;
-        render();
-      }
-    }
-    else {
-      STORE.questionNumber--;
-      if (STORE.score >= 1) {
-        STORE.score--;
-      }
-      render(); 
-    }
-    
-  });
-}
+  // console.log(`you said ${input}`)
+  // console.log(`answer is ${answer}`)
 
- function restart() {
-  $('main').on("click", '#restart', event => {
-    STORE.quizStarted = false;
-    STORE.questionNumber = 0;
-    STORE.score = 0;
-    render();
-    });
-   }
+  if (answer.includes(input)) {
+    STORE.score++;
+    return `Correct! You said ${input}, answer is ${answer}`
+  } else {
+    return `Wrong. You said ${input}, answer is ${answer}`;
+  }
+}
 
 function handleQuizApp() {
+  getDogImage();
   render();
   clickStart();
   clickHeader();
-  clickBack();
-  clickContinue();
-  restart();
-  clickValidate();
-  getDogImage();
-  displayDogImage()
+  submitAnswer();
+  displayDogImage();
 }
+
+
 $(handleQuizApp);
