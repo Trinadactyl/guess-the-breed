@@ -7,12 +7,12 @@
 //   -option to see a leaderboard of skills! 
  
 
-
 //-------------Changes to make:------------------
-//use legally obtained images with consistent dimensions 
+//display breed name in a better way
 //consistent button styles
 //change font styles
 //choose fun & user friendly color scheme
+
 //Display silly messages at end of quiz based on user score
 //add backgroung images and animations, and maybe sounds?
 //add option for users to comment & send feedback
@@ -24,7 +24,7 @@ const STORE = {
   questionNumber: 0,
   score: 0,
   dogURL: "",
-  breed: [],
+  breed: "",
 };
 
 //*************DOG API FUNCTION****************/
@@ -42,9 +42,10 @@ function getDogImage(){
 function getBreedFromUrl() {
   //divde URL by splashes
   let urlBits = STORE.dogURL.split('/');
-
   //take the breed name again and divide
-  let breedName =  urlBits[4].split('-')
+  let breedName =  urlBits[4].split('-').reverse().join(" ")
+
+  console.log("breed is:", breedName)
   
   STORE.breed = breedName;
 }
@@ -86,7 +87,7 @@ function displayDogImage() {
 function userInputHtml() {
   return `
     <form id="user-form">
-      <input type="text" id="input">
+      <input type="text" id="input" required>
       <input type="submit" id="guess-btn" value="answer">
     </form>
   `
@@ -94,10 +95,11 @@ function userInputHtml() {
 
 function resultHtml() {
   let result = validateInput()
-  console.log(result)
+  //console.log(result)
 
   return `
   <div id="result">${result}</div>
+  <button id="continue" onclick="clickContinue()">continue</button>
   `
 }
 
@@ -163,27 +165,36 @@ function clickHeader() {
 //handle submit click
 function submitAnswer() {
     $('main').on("submit", "#user-form", event => {
-      validateInput()
+      event.preventDefault()      
+      let html = " ";
+      html += progressAndScoreHtml();
+      html += resultHtml()
 
-      //just need this to display!
-      resultHtml();
-      STORE.questionNumber++;
-      render();
+      $('main').html(html);
+      
     });
 }
 
+function clickContinue() {
+  //$('button').on('click', '#continue', e => {
+    console.log("continue clicked");
+    STORE.questionNumber++;
+    render()
+ // })
+}
+
 function validateInput() {
+  //reverse array items, stringify, and replace commas w/ spaces
   const answer = STORE.breed;
   const input = $('#input').val()
 
-  // console.log(`you said ${input}`)
-  // console.log(`answer is ${answer}`)
+  console.log(`user said ${input}`)
 
-  if (answer.includes(input)) {
+  if (answer.includes(input) && input.length >= 1) {
     STORE.score++;
-    return `Correct! You said ${input}, answer is ${answer}`
+    return `Correct! You said ${input}, that is a ${answer}`
   } else {
-    return `Wrong. You said ${input}, answer is ${answer}`;
+    return `Wrong. You said ${input}, that is a ${answer}`;
   }
 }
 
@@ -194,6 +205,7 @@ function handleQuizApp() {
   clickHeader();
   submitAnswer();
   displayDogImage();
+  clickContinue()
 }
 
 

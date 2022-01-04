@@ -1,17 +1,28 @@
+/* https://coolors.co/938ba1-34435e-f7dba7-5bc0be-db5a42 */
+
 
 * {
   font-family: "Amatic SC";
   text-align: center;
   font-size: 24px;
-  background-color: #6EEB83;
+  background-color: #938BA1;
 }
 
 main {
   padding: 50px;
 }
 
+header {
+  color: #F7DBA7;
+}
+
 header:hover {
   cursor: pointer;
+  color: #34435E;
+}
+
+p , li{
+  color: #F7DBA7;
 }
 
 .start-page {
@@ -22,15 +33,57 @@ header:hover {
 }
 
 #start {
-  background-color: yellow;
-  height: 50px;
+  background-color: #DB5A42;
+  color: #F7DBA7;
+  height: 60px;
   width: auto;
-  border-radius: 40%;
+  border: 2px solid #F7DBA7;
+  border-radius: 30px;
+}
+
+#start:hover {
+  background-color: #34435E;
 }
 
 img {
   max-width: 60%;
-  padding: 10px;
+  padding: 20px;
+  /* background-color: #5BC0BE; */
+  border: solid black 8px;
+  border-radius: 5px;
+}
+
+#guess-btn {
+  background-color: #34435E;
+  color: #F7DBA7;
+  height: 40px;
+  border: 2px solid #F7DBA7;
+  border-radius: 15px;
+}
+
+#guess-btn:hover {
+  background-color: #DB5A42;;
+}
+
+#input {
+  background-color: #F7DBA7;
+  border: 2px solid #34435E;
+}
+
+#result {
+  color: #F7DBA7;
+}
+
+#continue {
+  background-color: #34435E;
+  color: #F7DBA7;
+  height: 40px;
+  width: auto;
+  border: 2px solid #F7DBA7;
+  border-radius: 15px;
+}
+#continue:hover {
+  background-color: #DB5A42;;
 }
 
 ul {
